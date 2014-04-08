@@ -77,7 +77,9 @@
 - (IBAction) firedListOpen:(UITapGestureRecognizer *) tapGestureRecognizer
 {
     if( _collectionView.frame.origin.y == _sliderMinVertical ){
-        [self firedListClose:nil];
+        if( tapGestureRecognizer != nil ){
+            [self firedListClose:nil];
+        }
     }else{
         const CGFloat verticalMax = _sliderMaxVertical - _toolBarView.frame.size.height * .5f;
             // ドラッグできる下限
@@ -196,16 +198,15 @@
 
 - (void) scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    CGPoint location = [_collectionView.panGestureRecognizer locationInView:self.view];
 //    NSLog(@"location=%@",[NSValue valueWithCGPoint:location ]);
-    
     if( scrollView.decelerating != YES ){
+        CGPoint location = [scrollView.panGestureRecognizer locationInView:self.view];
         static BOOL _skipUpdate = NO;
         if( location.y < _collectionView.frame.origin.y ){
     //        NSLog(@"画面外に移動");
             
             if( _contentOffset == nil ){
-                _contentOffset = [NSValue valueWithCGPoint:_collectionView.contentOffset];
+                _contentOffset = [NSValue valueWithCGPoint:scrollView.contentOffset];
             }
 
     //        NSLog(@"1) _collectionView.frame=%@",[NSValue valueWithCGRect:_collectionView.frame]);
@@ -228,7 +229,7 @@
                 // boardの更新
             
             _skipUpdate = YES;
-            [_collectionView setContentOffset:[_contentOffset CGPointValue] animated:NO];
+            [scrollView setContentOffset:[_contentOffset CGPointValue] animated:NO];
             _skipUpdate = NO;
         }
     }
